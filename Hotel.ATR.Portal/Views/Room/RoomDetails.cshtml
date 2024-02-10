@@ -351,8 +351,17 @@
                 <div class="newsletter-container">
                     <h3>NewsLetter Sign-Up</h3>
                     <div class="newsletter-form">
-                        <form action="#" id="mc-form" class="mc-form fix">
+
+                        <form action="@Url.Action("SubcribeNewsletter", "Room")"
+                              id="mc-form" 
+                            class="mc-form fix"
+                            method="post"
+                        enctype="multipart/form-data">
+
                             <input id="mc-email" type="email" name="email" placeholder="Enter your E-mail">
+                            <input id="mc-name" type="text" name="name" placeholder="Enter your name">
+
+                            <input type="file" name="userFile"/>
                             <button id="mc-submit" type="submit" class="default-btn">subcribes</button>
                         </form>
                         <!-- mailchimp-alerts Start -->

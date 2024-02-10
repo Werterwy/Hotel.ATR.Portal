@@ -2,7 +2,7 @@
 
 namespace Hotel.ATR.Portal.Controllers
 {
-    public class RoomDetailsController : Controller
+    public class EventController : Controller
     {
         public IActionResult Index()
         {

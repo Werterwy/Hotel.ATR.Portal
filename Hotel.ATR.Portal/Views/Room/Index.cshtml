@@ -1,9 +1,9 @@
 ﻿@model User
 
 
-@section style{
+@*@section style{
     <link rel="stylesheet" href="~/css/responsive.css">
-}  
+}  *@
   <!-- Breadcrumb Area Start-->
 <section class="breadcrumb-area overlay-dark-2 bg-3">
     <div class="container">
@@ -14,7 +14,7 @@
                     <p>A quality room of hotel ATR with sea or mountain view</p>
                     <div class="breadcrumb-bar">
                         <ul class="breadcrumb">
-                            <li><a href="index.html">Home</a></li>
+                            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                             <li> @ViewBag.User @Model.email  Room - grid view</li>
                         </ul>
                     </div>

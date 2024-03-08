@@ -1,4 +1,11 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Builder;
+@using Microsoft.AspNetCore.Localization;
+@using Microsoft.Extensions.Options;
+
+@inject IOptions<RequestLocalizationOptions> locOptions
+
+@{
+    ViewData["Title"] = "Home Page";
     Layout = "_HomeLayout";
 }
 <!-- About Us Area Start -->
@@ -117,6 +124,27 @@
         </div>
     </div>
 </section>
+
+
+<br />
+<br />
+<br />
+<br />
+
+    <form>
+        <Lable>Language:</Lable>
+        <select>
+            <option>Выберите язык</option>
+            @foreach(var item in locOptions.Value.SupportedCultures)
+            {
+                <option value = "@item.Name">
+                    @item.Name | @item.DisplayName
+                </option>
+            
+            }
+        </select>
+
+    </form>
 <!-- About Us Area End -->
 @section Scripts{
     <script src="~/js/main2.js"></script>

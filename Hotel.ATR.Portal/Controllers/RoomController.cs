@@ -1,4 +1,5 @@
 ﻿using Hotel.ATR.Portal.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hotel.ATR.Portal.Controllers
@@ -6,14 +7,24 @@ namespace Hotel.ATR.Portal.Controllers
     public class RoomController : Controller
     {
         private IWebHostEnvironment webHost;
+        private readonly ILogger<RoomController> _logger;
 
-        public RoomController(IWebHostEnvironment webHost)
+        public RoomController(IWebHostEnvironment webHost, ILogger<RoomController> logger)
         {
             this.webHost = webHost;
+            this._logger = logger;
         }
+
+        [Authorize]
         public IActionResult Index(int page, int counter)
         {
-            var user = new User() { email = "reter@.kz", name = "orazbay" };
+
+            _logger.LogInformation("logging Information");
+            _logger.LogCritical("Logging Critical");
+            _logger.LogDebug("Logging Debug");
+            _logger.LogError("Logging Error");
+
+            var user = new User() { email = "ok@ok.kz", name = "yevgeniy" };
 
             ViewBag.User = user;
             ViewData["user"]= user;

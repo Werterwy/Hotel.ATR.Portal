@@ -1,18 +1,22 @@
 ﻿@using Microsoft.AspNetCore.Builder;
 @using Microsoft.AspNetCore.Localization;
 @using Microsoft.Extensions.Options;
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization;
 
 @inject IOptions<RequestLocalizationOptions> locOptions
-
+@inject IViewLocalizer _lang
 @{
     ViewData["Title"] = "Home Page";
     Layout = "_HomeLayout";
+    var cultureList = locOptions.Value.SupportedUICultures;
 }
 <!-- About Us Area Start -->
 <section class="about-area">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
+
                 <form action="#" method="post" class="search-form">
                     <div class="form-container fix">
                         <div class="box-select">
@@ -107,7 +111,8 @@
                             </span>
                         }
 
-                        <h3>about us</h3>
+                        
+
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Utjij enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi utjjij aliquip ex ea commodo consequat.</p>
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.</p>
                         <p>Fipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor</p>
@@ -123,6 +128,42 @@
             </div>
         </div>
     </div>
+    
+    <h3>
+        @_lang["aboutus"]
+        <br /><br />
+
+        @*@User.Identity.Name - @ViewBag.Culture*@
+    </h3>
+
+    <form asp-action ="Index" id="cultureForm">
+        <lable>Language:</lable>
+        <select onchange="SetCulture(this.value);">
+            <option selected value="">Выберите язык</option>
+            @foreach (var item in locOptions.Value.SupportedCultures)
+            {
+                <option value="@item.Name">
+                    @item.Name | @item.DisplayName
+                </option>
+
+            }
+        </select>
+
+    </form>
+
+   
+    <br /><br />
+    <form asp-action="Index" id="cultureForm">
+        <label>Language: </label>
+        <select onchange="SetCulture(this.value);">
+            <option selected value="">Выберете язык</option>
+
+            @foreach (CultureInfo item in cultureList)
+            {
+                <option value="@item.Name">@item.Name | @item.DisplayName</option>
+            }
+        </select>
+    </form>
 </section>
 
 
@@ -131,21 +172,31 @@
 <br />
 <br />
 
-    <form>
-        <Lable>Language:</Lable>
-        <select>
-            <option>Выберите язык</option>
-            @foreach(var item in locOptions.Value.SupportedCultures)
-            {
-                <option value = "@item.Name">
-                    @item.Name | @item.DisplayName
-                </option>
-            
-            }
-        </select>
-
-    </form>
 <!-- About Us Area End -->
-@section Scripts{
+@*@section Scripts{
     <script src="~/js/main2.js"></script>
+}*@
+
+@section Scripts{
+    <script>
+        function SetCulture(selectValue) {
+            var culture = "/?culture=" + selectValue + "&cultureIU=" + selectValue;
+
+            document.getElementById("cultureForm").action = culture;
+            document.getElementById("cultureForm").submit();
+        }
+    </script>
+
+
 }
+
+@*@section script
+    {
+    <script>
+        function SetCulture(selectedCulture) {
+            var culture = "/?culture=" + selectedCulture + "&cultureIU=" + selectedCulture;
+            document.getElementById("cultureForm").action = culture;
+            document.getElementById("cultureForm").submit();
+        }
+    </script>
+}*@

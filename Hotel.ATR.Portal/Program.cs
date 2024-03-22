@@ -71,9 +71,35 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Services.AddControllersWithViews();
 
+
+builder.Services.AddMvc().AddMvcLocalization(LanguageViewLocationExpanderFormat.Suffix);
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var cultures = new[]
+    {
+        new CultureInfo("ru-Ru"),
+        new CultureInfo("kz-Kz"),
+        new CultureInfo("en-Us")
+    };
+
+    options.DefaultRequestCulture = new RequestCulture("ru-Ru", "ru-Ru");
+    options.SupportedCultures = cultures;
+    options.SupportedUICultures = cultures;
+
+});
+
+//builder.Services.AddTransient<IRepository, Repository>();
+
+builder.Services.AddLocalization(options =>
+options.ResourcesPath = "Resources");
+
+
 builder.Host.UseSerilog(Log.Logger);
 
 builder.Services.AddSingleton<Serilog.ILogger>(Log.Logger);
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.Configure<CookieTempDataProviderOptions>
     (options =>
@@ -90,6 +116,7 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromSeconds(5);
+    options.Cookie.HttpOnly = true;
     options.Cookie.Name = ".HotelATR.Session";
 });
 
@@ -104,23 +131,7 @@ builder.Services.AddAuthentication
 
 var app = builder.Build();
 
-//builder.Services.AddMvc().AddMvcLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
-/*builder.Services.Configure<RequestLocalizationOptions>(options =>
-{
-    var cultures = new[]
-    {
-        new CultureInfo("ru-Ru"),
-        new CultureInfo("kz-Kz"),
-        new CultureInfo("ue-Ue")
-    };
-
-    options.DefaultRequestCulture = new RequestCulture(
-        culture: "ru=Ru", uiCulture: "ru-Ru");
-    options.SupportedCultures = cultures;
-    options.SupportedUICultures = cultures;
-
-});*/
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -134,7 +145,9 @@ app.UseSession();
 app.UseRouting();
 
 
-var localOptios = app.Services.GetService < IOptions < RequestLocalizationOptions>> ();
+var localOptios = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
+
+/*var locOptions = app.Services.GetService<IOptions<RequestLocalizationOptions>>();*/
 
 app.UseRequestLocalization(localOptios.Value);
 /*app.Map("/Index", Index);*/

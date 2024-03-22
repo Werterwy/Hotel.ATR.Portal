@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using System.Diagnostics;
 using System.Reflection.PortableExecutable;
@@ -11,25 +13,40 @@ using System.Linq;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Hotel.ATR.Portal.Controllers
 {
-   // [Route("main")]
+    // [Route("main")]
 
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         /*private HttpContextAccessor _httpContext;*/
+        private readonly IStringLocalizer<HomeController> _local;
 
-        public HomeController(ILogger<HomeController> logger/*, HttpContextAccessor httpContextAccessor *//*IRepository repo*/)
+        public HomeController(ILogger<HomeController> logger/*, HttpContextAccessor httpContext*/, IStringLocalizer<HomeController> local)
         {
             _logger = logger;
-        /*    _httpContext = httpContextAccessor;*/
-
+        /*    _httpContext = httpContext;*/
+            _local = local;
         }
 
-        public IActionResult Index()
+        /*        [Route("IndexNew")]*/
+
+        public IActionResult Index(string culture, string cultureIU)
         {
+
+            ViewBag.AboutUs = _local["aboutus"];
+
+            GetCulture(culture);
+
+            if (!string.IsNullOrWhiteSpace(culture))
+            {
+                CultureInfo.CurrentCulture = new CultureInfo(culture);
+                CultureInfo.CurrentUICulture = new CultureInfo(culture);
+
+            }
 
             HttpContext.Session.SetString("Iin", "031127000066");
             //var data2 = _httpContext.HttpContext.Request.Cookies["Iin"];
@@ -78,8 +95,25 @@ namespace Hotel.ATR.Portal.Controllers
             return View();
         }
 
-       
+        public IActionResult AboutUs()
+        {
 
+            string key = "IIN";
+            string value = "880111300392";
+
+            CookieOptions options = new CookieOptions();
+            options.Expires = DateTime.Now.AddDays(1);
+
+            Response.Cookies.Append(key, value);
+            Response.Cookies.Append("key_2", value);
+            Response.Cookies.Append("key_3", value);
+
+
+
+            return View();
+        }
+
+        [Authorize]
         public IActionResult Privacy()
         {
             return View();
@@ -101,18 +135,13 @@ namespace Hotel.ATR.Portal.Controllers
             return View();
         }
 
-        public IActionResult Logout()
-        {
 
-            HttpContext.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
 
         [HttpPost]
         public async Task<IActionResult> Login(string login, string password, string ReturnUrl)
         {
 
-            if(login == "admin" &&  password == "admin")
+            if (login == "admin" && password == "admin")
             {
                 var claims = new List<Claim>
                 {
@@ -120,11 +149,12 @@ namespace Hotel.ATR.Portal.Controllers
                 };
                 var claimsIdentity = new ClaimsIdentity(claims, "Login");
 
-               await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity));
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                     new ClaimsPrincipal(claimsIdentity));
 
+               // HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-                if(string.IsNullOrEmpty(ReturnUrl))
+                if (string.IsNullOrEmpty(ReturnUrl))
                 {
                     return RedirectToAction("Index", "Home");
                 }
@@ -133,11 +163,31 @@ namespace Hotel.ATR.Portal.Controllers
                     return Redirect(ReturnUrl);
                 }
 
-               /* Task.Delay(100).Wait();
-                return Redirect(ReturnUrl);*/
+                /* Task.Delay(100).Wait();
+                 return Redirect(ReturnUrl);*/
             }
             return View();
         }
+        public IActionResult Logout()
+        {
+
+            HttpContext.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+        public string GetCulture(string code = "")
+        {
+            if (!string.IsNullOrWhiteSpace(code))
+            {
+                CultureInfo.CurrentCulture = new CultureInfo(code);
+                CultureInfo.CurrentUICulture = new CultureInfo(code);
+
+                ViewBag.Culture = string.Format("CurrentCulture: {0}, CurrentUICulture: {1}", CultureInfo.CurrentCulture,
+                    CultureInfo.CurrentUICulture);
+            }
+            return "";
+        }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

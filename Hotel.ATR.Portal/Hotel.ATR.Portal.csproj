@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Resources\Controllers\" />
     <Folder Include="wwwroot\Logs\" />
   </ItemGroup>
 

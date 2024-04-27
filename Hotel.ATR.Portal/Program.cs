@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Localization;
+using Hotel.ATR.Portal.Models;
+using Hotel.ATR.Portal;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 /*builder.Host.ConfigureLogging(logging =>
@@ -58,14 +61,27 @@ var builder = WebApplication.CreateBuilder(args);
 });
 */
 // Add services to the container.
+void HeandlMapOpen(IApplicationBuilder appMap)
+{
+    appMap.Run(async context =>
+    {
+        await context.Response.WriteAsync("hello");
+    });
+}
 
-string connectionString = builder.Configuration.GetConnectionString("DemoSeriLogDB");
+string connectionStringDC = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<HotelATRContext>(
+    options => options.UseSqlServer(connectionStringDC));
+
+builder.Services.Configure<APIEndpoint>(
+builder.Configuration.GetSection("APIEndpoint"));
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Seq("http://localhost:5341/")
     .WriteTo.File("Logs/logs.txt", rollingInterval: RollingInterval.Day)
-  /*  .WriteTo.MSSqlServer(connectionString, sinkOptions: new MSSqlServerSinkOptions { TableName = "Log" }, null, null,
-        LogEventLevel.Information, null, null, null, null)*/
+    /*  .WriteTo.MSSqlServer(connectionString, sinkOptions: new MSSqlServerSinkOptions { TableName = "Log" }, null, null,
+          LogEventLevel.Information, null, null, null, null)*/
     .CreateLogger();
 
 
@@ -111,6 +127,10 @@ builder.Services.Configure<CookieTempDataProviderOptions>
     });
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+
+builder.Services.AddScoped<TimeElapsed>();
+builder.Services.AddScoped<CatchError>();
+
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
@@ -119,6 +139,13 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.Name = ".HotelATR.Session";
 });
+
+builder.Services.AddCors(cors =>
+    {
+        cors.AddPolicy("Policy_1",
+        builder => builder.WithOrigins("http://localhost:56281/").WithMethods("GET"));
+    }
+);
 
 builder.Services.AddAuthentication
     (CookieAuthenticationDefaults.AuthenticationScheme)
@@ -144,6 +171,28 @@ app.UseSession();
 
 app.UseRouting();
 
+app.UseCors("Policy_1");
+
+ //app.UseMiddleware<ContentMiddleware>();
+
+/*app.Use(async (context, next) =>
+    {
+        await context.Response.WriteAsync("Before invoke app.Use\n");
+        await next();
+
+        await context.Response.WriteAsync("After invoke app.Use\n");
+
+    }
+) ; 
+app.Map("/m2", HeandlMapOpen);
+
+app.Map("/m1", appMap =>
+    appMap.Run(async context =>
+    {
+        await context.Response.WriteAsync("hello");
+    })
+);
+*/
 
 var localOptios = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
 

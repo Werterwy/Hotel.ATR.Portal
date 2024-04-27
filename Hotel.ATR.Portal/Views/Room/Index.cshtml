@@ -1,5 +1,5 @@
-﻿@model User
-
+﻿@*@model User*@
+@model List<Room>
 
 @*@section style{
     <link rel="stylesheet" href="~/css/responsive.css">
@@ -8,6 +8,8 @@
 <section class="breadcrumb-area overlay-dark-2 bg-3">
     <div class="container">
         <div class="row">
+
+ 
             <div class="col-md-12">
                 <div class="breadcrumb-text text-center">
                     <h2>room - grid view</h2>
@@ -15,7 +17,7 @@
                     <div class="breadcrumb-bar">
                         <ul class="breadcrumb">
                             <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                            <li> @ViewBag.User @Model.email  Room - grid view</li>
+                            <li>   Room - grid view</li>
                         </ul>
                     </div>
                 </div>
@@ -39,6 +41,10 @@
     </div>
     <div class="container">
         <div class="row">
+            @*@foreach (Room item in Model)
+            {
+            }*@
+
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div class="single-room">
                     <img src="img/room/5.jpg" alt="">

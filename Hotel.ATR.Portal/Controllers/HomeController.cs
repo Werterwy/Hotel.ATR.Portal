@@ -34,8 +34,16 @@ namespace Hotel.ATR.Portal.Controllers
 
         /*        [Route("IndexNew")]*/
 
+        //[IEFillerAttribute]
+        /* [ServiceFilter(typeof(TimeElapsed))]*/
+   /*     [ServiceFilter(typeof(CatchError))]*/
         public IActionResult Index(string culture, string cultureIU)
         {
+
+            //throw new Exception("моя ошибка");
+
+            Thread.Sleep(100);
+            // Executing 
 
             ViewBag.AboutUs = _local["aboutus"];
 
@@ -93,6 +101,8 @@ namespace Hotel.ATR.Portal.Controllers
 
 
             return View();
+
+            // Executed
         }
 
         public IActionResult AboutUs()
@@ -113,6 +123,11 @@ namespace Hotel.ATR.Portal.Controllers
             return View();
         }
 
+        public IActionResult Errort()
+        {
+            return View();
+        }
+
         [Authorize]
         public IActionResult Privacy()
         {
@@ -121,7 +136,10 @@ namespace Hotel.ATR.Portal.Controllers
 
         public IActionResult About()
         {
+            // Executing
             return View();
+
+            //Executed
         }
         [Authorize]
         public IActionResult Contact()
@@ -193,6 +211,15 @@ namespace Hotel.ATR.Portal.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public JsonResult GetUser()
+        {
+            User user = new User();
+            user.email = "gersen.e.a@gmail.com";
+            user.name = "Yevgeniy Gersen";
+
+            return Json(user);
         }
     }
 }

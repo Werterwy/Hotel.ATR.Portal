@@ -130,7 +130,7 @@
     </div>
     
     <h3>
-        @_lang["aboutus"]
+        @*@_lang["aboutus"]*@
         <br /><br />
 
         @*@User.Identity.Name - @ViewBag.Culture*@
@@ -173,30 +173,25 @@
 <br />
 
 <!-- About Us Area End -->
-@*@section Scripts{
-    <script src="~/js/main2.js"></script>
-}*@
-
-@section Scripts{
-    <script>
-        function SetCulture(selectValue) {
-            var culture = "/?culture=" + selectValue + "&cultureIU=" + selectValue;
-
-            document.getElementById("cultureForm").action = culture;
-            document.getElementById("cultureForm").submit();
-        }
-    </script>
-
-
-}
-
-@*@section script
+@section Scripts
     {
     <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: "http://localhost:56281/home/GetUser"
+            }).done(function (data) {
+                console.log(data);
+            });
+        });
+
+        // Включите ваш скрипт main2.js
+        $.getScript("/js/main2.js");
+
+        // Включите ваш скрипт SetCulture
         function SetCulture(selectedCulture) {
             var culture = "/?culture=" + selectedCulture + "&cultureIU=" + selectedCulture;
             document.getElementById("cultureForm").action = culture;
             document.getElementById("cultureForm").submit();
         }
     </script>
-}*@
+}

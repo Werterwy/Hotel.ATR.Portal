@@ -62,11 +62,27 @@ namespace Hotel.ATR.Portal.Controllers
             return View();
         }
 
-        public IActionResult RoomList()
+        public async Task<IActionResult> RoomList()
         {
-            List<Room> data = null;
+            List<Room> rooms = new List<Room>();
 
-            return View(data);
+            string Jwt = GenerateJSONWebToken();
+
+
+            using (var httpClient = new HttpClient())
+            {
+
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Jwt);
+                using (var responce = await httpClient
+                    .GetAsync("http://localhost:5031/api/Room"))
+                {
+                    string apiResponce = await responce.Content.ReadAsStringAsync();
+
+                    rooms = JsonConvert.DeserializeObject<List<Room>>(apiResponce);
+                }
+            }
+
+            return View(rooms);
         }
 
         public IActionResult RoomDetails()
